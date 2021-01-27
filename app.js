@@ -3,10 +3,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+
 //router files
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var stripeRouter = require('./routes/stripe')
+var stripeRouter = require('./routes/stripe');
 
 var app = express();
 
@@ -21,4 +22,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/v1/stripe', stripeRouter);
 
+
+
+
 module.exports = app;
+

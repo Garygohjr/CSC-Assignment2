@@ -2,12 +2,27 @@
 
 <head>
   <title>Express</title>
+  <meta name="viewport" content="width=device-width" />
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 
 <body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
+  <h1>Registration</h1>
+  <form id="customer_register">
+    <div class="">
+      <p class="email_header">Please Enter your email</p>
+      <input class="" id="email" type="text" placeholder="Email address" required />
+    </div>
+
+    <button id="customer-submit" class="" type="submit">
+      Sign up
+    </button>
+  </form>
+
+  <a href="./talentimages.html">Click here to view all talent photos as guest</a>
+
+  <script src="/index_script.js"></script>
 </body>
 
 </html>
