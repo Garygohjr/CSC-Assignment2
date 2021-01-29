@@ -5,7 +5,7 @@ initStripe();
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const custId = urlParams.get('customerId');
-
+var myStorage = window.sessionStorage;
 
 getAllPrices();
 
@@ -60,6 +60,7 @@ function stripeTokenHandler(token){
     .then((response) => {
         console.log(response.status);
         if(response.status){
+            myStorage.setItem('custId', custId);
             window.location.href = '/talentimages.html?customerId=' + custId;
         }
     });
@@ -139,7 +140,7 @@ function getAllPrices() {
             document.getElementById("select_plan").innerHTML += radio_row;
             
         }
-    })
+    });
         
 }
 
