@@ -7,22 +7,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-  
 </head>
 
 <body>
-  <h1>Login</h1>
-    <label for="username">Username: </label>
-    <input id="usernameInput" type="text" name="usernameInput">
-    <br>
-    <br>
-    <label for="password">Password: </label>
-    <input id="passwordInput" type="text" name="passwordInput">
-    <br>
-    <br>
-    <input type="submit" id="login" value="login" onclick="login();">
-
-  <script src="/index.js"></script>
+  <ul>
+    <li><a id ="talentsLink" href="/talents">All Talents</a></li>
+    <li><a id ="profileLink" href="/profile">My Profile</a></li>
+  </ul>
+  <h1>All Talents</h1>
+  <ul id = 'talentList'></ul>
+  <script src="/allTalents.js"></script>
 </body>
-
 </html>
+
