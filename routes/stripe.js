@@ -17,7 +17,7 @@ const bodyParser = require('body-parser');
 db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // successCallback
   // << db CRUD routes >>
 
-    /* Stipe (something) call */
+    /* Stripe (something) call */
     router.get('/', function(req, res, next) {
       /*some stripe api call code*/
     });
@@ -222,6 +222,7 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
           var subscription = event.data.object;
           var cust_id = subscription.customer;
           var new_price_id = subscription.items.data[0].price.id;
+          //currently no interaction with database as you can get price id from subscription
           
           console.log(`Customer subscription updated`);
           console.log(cust_id);
