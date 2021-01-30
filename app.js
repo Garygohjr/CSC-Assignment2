@@ -8,6 +8,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var stripeRouter = require('./routes/stripe');
+var talentsRouter = require('./routes/talents');
+var profileRouter = require('./routes/profile');
 
 var app = express();
 
@@ -21,6 +23,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/v1/stripe', stripeRouter);
+app.use('/talents', talentsRouter);
+app.use('/profile',profileRouter)
 
 
 
