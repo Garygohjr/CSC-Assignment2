@@ -2,12 +2,47 @@
 
 <head>
   <title>Express</title>
+  <meta name="viewport" content="width=device-width" />
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  
 </head>
 
 <body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
+
+
+  <a href="./talents">Click here to view all talent photos as guest</a>
+
+  <h1>Registration</h1>
+  <form id="customer_register">
+    <div class="">
+      <p class="email_header">Email</p>
+      <input class="" id="email" type="text" placeholder="Email address" required />
+      <p class="email_header">Name</p>
+      <input class="" id="email" type="text" placeholder="Name" required />
+    </div>
+
+    <button id="customer-submit" class="" type="submit">
+      Sign up
+    </button>
+  </form>
+
+  <h1>Login</h1>
+    <label for="username">Username: </label>
+    <input id="usernameInput" type="text" name="usernameInput">
+    <br>
+    <br>
+    <label for="password">Password: </label>
+    <input id="passwordInput" type="text" name="passwordInput">
+    <br>
+    <br>
+  <input type="submit" id="login" value="login" onclick="login();">
+
+  <script src="/scripts/index_script.js"></script>
 </body>
 
 </html>
