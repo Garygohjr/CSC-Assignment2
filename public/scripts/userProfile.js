@@ -8,19 +8,24 @@ function getUserProfile(){
         method:'GET'
     }).done(function(data){
         console.log(data);
-        var results = data.results;
-        var header = '<h1>' + results[0].TalentName +'</h1>'
-        $('#talentDetails').append(header);
-        var biography = '<p>Biography: ' + results[0].Biography + '</p>'
-        $('#talentDetails').append(biography);
+        var profile = data.profile;
+        var images = data.images;
+        console.log(images);
+        if (profile[0] != undefined) {
+            var header = '<h1>' + profile[0].TalentName + '</h1>'
+            $('#talentDetails').append(header);
+            var biography = '<p>Biography: ' + profile[0].Biography + '</p>'
+            $('#talentDetails').append(biography);
 
-        for (var i = 0; i < results.length;i++){
-            var elem = '<div class="card" id=card_' + results[i].ImageId + '></div>'
-            $('#talentDetails').append(elem);
-            var elem_id = '#card_' + results[i].ImageId;
-            $(elem_id).append('<img src=' + results[i].ImageUrl + ' id=img_' + results[i].ImageId +'></img>');
-            $(elem_id).append('<div class="desc">' + results[i].Description + '</div>');
-            $(elem_id).append('<input class="cardRadio" name="radio" type=radio id='+ results[i].ImageId + ' value=' + results[i].ImageId + '></input>')
+            for (var i = 0; i < images.length; i++) {
+                var elem = '<div class="card" id=card_' + images[i].ImageId + '></div>'
+                $('#talentDetails').append(elem);
+                var elem_id = '#card_' + images[i].ImageId;
+                $(elem_id).append('<img src=' + images[i].ImageUrl + ' id=img_' + images[i].ImageId + '></img>');
+                $(elem_id).append('<div class="desc">' + images[i].Description + '</div>');
+                $(elem_id).append('<input class="cardRadio" name="radio" type=radio id='+ images[i].ImageId + ' value=' + images[i].ImageId + '></input>')
+                console.log(elem);
+            }
         }
         
     })
@@ -31,6 +36,8 @@ AWS.config.update({
     secretAccessKey: 'V/PLW4cuuZKsaO32mDXlyehem5zf2RMNaUGTpO+9',
     sessionToken: 'FwoGZXIvYXdzEKH//////////wEaDHhUaVA1/jLO3InmyyLKAZupVEGmfvjaopTSIF8sRpLvN26HSN2kf++CUVf3EmRkh3RDVhsAP9WgEWMaXXtw9ruUwr9AYL7FPM3ntpaFCt5BYw5r6Ll+JD40cPpKVUNNP5EmlJVGNdHEfybl0uJA5f51wjbq6GGIbIYn/RGxRXiuKvMaVNTtcnKZBjgSPvGmhTvZT3bEG+qIEoVZDWywuMYKEz2Lu0rQBT5LW3nKlUVWsuY6AlutTiEB+7lfnY/rQ/9/a9HsHwHZpCa613jiv0FbosnBRLnx76EouMjQgAYyLVdjEa0GWpgOA92DCu4y3PZ4l9DDn0kak8iLfEX4+VnaQQhKo82yUq7VC0cgcA=='
 });
+
+
 AWS.config.region = 'us-east-1';
 var s3BucketName = 'talentsphotosbucket';
 

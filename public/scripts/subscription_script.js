@@ -61,7 +61,7 @@ function stripeTokenHandler(token){
         console.log(response.status);
         if(response.status){
             myStorage.setItem('custId', custId);
-            window.location.href = '/talentimages.html?customerId=' + custId;
+            window.location.href = '/talents'
         }
     });
 }

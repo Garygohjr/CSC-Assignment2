@@ -17,14 +17,26 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/getAllTalents', function(req, res, next) {
-    //gets all talent profile along with their earliest uploaded image
-    connection.query('SELECT TalentProfile.TalentId,TalentName, Biography, ImageUrl FROM TalentProfile INNER JOIN TalentPictures ON TalentProfile.TalentId=TalentPictures.TalentId group by TalentProfile.TalentId ORDER BY TalentProfile.TalentId; '
+    var profiles;
+    //gets all talent profiles
+    connection.query('SELECT * FROM TalentProfile;'
     , function (error, results, fields) {
         if (error){
             return res.status('400').send({ msg: "error"  });
         }else{
             console.log(results);
-            return res.status('200').send({ results: results  });
+            profiles = results;
+        }
+    });
+    //get the latest talent image for each user(provided they have one)
+    connection.query('select MAX(ImageId) as ImageId, ImageUrl, TalentId from TalentPictures group by TalentId;'
+    , function (error, results, fields) {
+        if (error){
+            return res.status('400').send({ msg: "error"  });
+        }else{
+            console.log(results);
+            var latestImages = results;
+            return res.status('200').send({ profiles: profiles, latestImages: latestImages  });
         }
     });
 });
@@ -36,13 +48,26 @@ router.get('/:id', function(req, res, next) {
 router.get('/getOneTalent/:id', function(req, res, next) {
     console.log('one talent');
     var talentId = req.params.id;
-    connection.query('SELECT TalentProfile.TalentId,TalentName, Biography, ImageUrl, ImageId, Description FROM TalentProfile INNER JOIN TalentPictures ON TalentProfile.TalentId=TalentPictures.TalentId where TalentPictures.TalentId=' + talentId + ' ORDER BY TalentProfile.TalentId; '
+    var profile;
+    //gets all talent profiles
+    connection.query('SELECT * FROM TalentProfile where TalentId = ' + talentId + ';'
     , function (error, results, fields) {
         if (error){
             return res.status('400').send({ msg: "error"  });
         }else{
             console.log(results);
-            return res.status('200').send({ results: results  });
+            profile = results;
+        }
+    });
+    //get the latest talent image for each user(provided they have one)
+    connection.query('select ImageId, Description, ImageUrl, TalentId from TalentPictures where TalentId = ' + talentId + ';'
+    , function (error, results, fields) {
+        if (error){
+            return res.status('400').send({ msg: "error"  });
+        }else{
+            console.log(results);
+            var images = results;
+            return res.status('200').send({ profile: profile, images: images  });
         }
     });
 });
