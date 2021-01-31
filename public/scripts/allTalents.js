@@ -41,6 +41,10 @@ function getAllTalentPics(){
     })
 }
 
+$(function(){
+    $('.compose-wrapper').attr("display","none");
+})
+
 function goToDetailsPage(id){
     window.location.href = window.location.href + '/' + id
 }
