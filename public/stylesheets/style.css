@@ -71,3 +71,7 @@ div.desc {
   margin:auto;
   margin-bottom: 15px;
 }
+
+.compose-wrapper{
+  display:none;
+}
