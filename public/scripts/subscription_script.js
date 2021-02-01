@@ -59,10 +59,22 @@ function stripeTokenHandler(token){
     })
     .then((response) => {
         console.log(response.status);
-        if(response.status){
-            myStorage.setItem('custId', custId);
-            window.location.href = '/talents'
-        }
+        var b = response.json()
+        switch(response.status){
+            case 200:
+                myStorage.setItem('custId', custId);
+                window.location.href = '/talents'
+                break;
+            case 500:
+                console.log("Server error: " + b.error);
+                break;
+            case 400:
+                console.log("Error: " + b.error);
+                break;
+            default:
+                console.log(b);
+                break;
+        }   
     });
 }
 

@@ -8,7 +8,7 @@ if(custId == null){
     var custId = urlParams.get('customerId');
     console.log("new custId assigned = " + custId);
 }
-
+getAccountTier(custId);
 
 getAllTalentPics();
 
@@ -49,7 +49,7 @@ function goToDetailsPage(id){
 $( "#billing_portal_link" ).on( "click", function() {
     var input_data = JSON.stringify({
         custId: custId,
-        dest: 'talentimages.html'
+        dest: 'talents'
     });
     console.log(input_data);
     return fetch('/api/v1/stripe/accessPortal', {
@@ -66,3 +66,58 @@ $( "#billing_portal_link" ).on( "click", function() {
         window.location.replace(response.redirect_url);
     });
 });
+
+
+
+$( "#logout" ).on( "click", function() {
+    var code = null;
+    return fetch('/api/v1/stripe/logoutCustomer', {
+        method: 'post',
+        headers: {
+        'Content-Type': 'application/json',
+        }
+    })
+    .then((response) => {
+        code = response.status;
+        return response.json();
+    })
+    .then((result) => {
+        switch(code){
+            case 200: //successful login
+
+                
+                //myStorage.setItem('userId', 3);
+                //window.location.href = '/talents';
+                window.location.href = '/';
+                break;
+            
+            case 402:
+                $('#err_login').text(result.error);
+                break;
+            default:
+                console.log(result);
+                break;
+        }
+    });
+});
+
+
+function getAccountTier(custId){
+    var input_data = JSON.stringify({
+        custId: custId,
+    });
+    console.log(input_data);
+    return fetch('/api/v1/stripe/getAccountTier', {
+        method: 'post',
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body: input_data
+    })
+    .then((response) => {
+        return response.json();
+    })
+    .then((response) => {
+        console.log(response);
+    });
+}

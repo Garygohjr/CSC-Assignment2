@@ -24,7 +24,6 @@ router.get('/getAllTalents', function(req, res, next) {
         if (error){
             return res.status('400').send({ msg: "error"  });
         }else{
-            console.log(results);
             profiles = results;
         }
     });
@@ -34,7 +33,6 @@ router.get('/getAllTalents', function(req, res, next) {
         if (error){
             return res.status('400').send({ msg: "error"  });
         }else{
-            console.log(results);
             var latestImages = results;
             return res.status('200').send({ profiles: profiles, latestImages: latestImages  });
         }

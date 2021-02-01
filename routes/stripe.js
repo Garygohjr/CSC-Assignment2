@@ -4,6 +4,8 @@ var router = express.Router();
 const ObjectId = require('mongodb').ObjectId;
 const db = require("../database.js");
 
+const cognito = require("../cognito.js");
+
 // Get env file for keys and Ids
 const dotenv = require('dotenv');
 dotenv.config();
@@ -27,6 +29,29 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
         publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
       });
     });
+
+    router.post('/getAccountTier', async (req, res) => {
+      
+      var custId = req.body.custId;
+
+      var query = {
+        "stripe_id" : custId
+      }
+
+      var record = await dbCollection.findOne(query, null);
+
+      console.log(record);
+      return res.status('200').send({ msg: "Account Tier returned.", price: record.price_id });
+            // .then((result) => {
+            //   return response.status('200').send({ msg: "Subscription plan registered and saved to database!"  });
+            // })
+            // .catch(e => { 
+            //   return response.status('500').send({ error: e  }); 
+            // });
+
+
+    });
+
 
     router.get('/getAllPrices', async (req, res) => {
       
@@ -65,24 +90,80 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
       }
 
     });
+    
+    router.post('/logoutCustomer', async (req, res) => {
+
+      try {
+        var fullUrl = req.protocol + '://' + req.get('host') + '/'
+        var result = await cognito.signOut();
+        if(result){
+          return res.status('200').send({ msg: "Customer logged out!"});
+        }
+        else{
+          return res.status('402').send({ error: result.error.message });
+        }
+        
+
+      } catch (error) {
+        console.log(error);
+        return res.status('402').send({ error: error.message  });
+      }
+
+
+    });
+
+    router.post('/loginCustomer', async (req, res) => {
+
+      try {
+        var email = req.body.email;
+        var password = req.body.password;
+        
+        const result = await cognito.signIn(email, password);
+        console.log(result);
+        if(result.success){
+          return res.status('200').send({ msg: "Customer logged in!", user: result  });
+        }
+        else{
+          return res.status('402').send({ error: result.error.message  });
+        }
+        
+      } catch (error) {
+        console.log(error);
+        return res.status('402').send({ error: error.message  });
+      }
+
+
+    });
 
 
     router.post('/createCustomer', async (req, res) => {
       // Create a new customer object
+
+      var email = req.body.email;
+      var password = req.body.password;
+      var name = req.body.name;
+
+      await cognito.signUp(email, password, name);
+
       const customer = await stripe.customers.create({
-        email: req.body.email,
+        email: email,
       });
 
       dbCollection.insertOne({ 
-        email: req.body.email,
+        email: email,
+        name: name,
         stripe_id: customer.id
       })
       .then((result) => {
-        
-    }).catch(e => { console.log(e) });
+        res.send({ customer });
+      })
+      .catch(e => { 
+          console.log(e);
+          res.status('400').send({ error: e });
+      });
 
 
-      res.send({ customer });
+      
     });
 
 
@@ -122,21 +203,21 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
       var update = {
         $set:{
           "paymentmethod_id" : paymentMethod.id,
-          "subscription_id" : subscription.id
+          "subscription_id" : subscription.id,
+          "price_id": priceId
         }
       }
 
       dbCollection.updateOne(query, update, { "upsert": false })
         .then((result) => {
-
           return res.status('200').send({ msg: "Subscription plan registered and saved to database!"  });
         })
-        .catch(e => { return res.status('500').send({ msg: e  }); });
+        .catch(e => { return res.status('500').send({ error: e  }); });
 
       
 
     } catch (error) {
-      return res.status('402').send({ error: error.message  });
+      return res.status('400').send({ error: error.message  });
     }
 
 
@@ -226,7 +307,27 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
           
           console.log(`Customer subscription updated`);
           console.log(cust_id);
-          console.log(price_id);
+          console.log(new_price_id);
+
+          var query = {
+            "stripe_id" : cust_id
+          }
+    
+          var update = {
+            $set:{
+              "price_id": new_price_id
+            }
+          }
+    
+          dbCollection.updateOne(query, update, { "upsert": false });
+            // .then((result) => {
+            //   return response.status('200').send({ msg: "Subscription plan registered and saved to database!"  });
+            // })
+            // .catch(e => { 
+            //   return response.status('500').send({ error: e  }); 
+            // });
+
+
           break;
         
         // case 'customer.subscription.deleted':

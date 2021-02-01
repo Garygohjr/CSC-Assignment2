@@ -1,0 +1,17 @@
+{
+  "trigger": true,
+  "modules": [
+    "add-to-group"
+  ],
+  "parentResource": "cscassignment2778ebcad",
+  "functionName": "cscassignment2778ebcadPostConfirmation",
+  "resourceName": "cscassignment2778ebcadPostConfirmation",
+  "parentStack": "auth",
+  "triggerEnvs": [],
+  "triggerDir": "C:\\Users\\jiali\\AppData\\Roaming\\npm\\node_modules\\@aws-amplify\\cli\\node_modules\\amplify-category-auth\\provider-utils\\awscloudformation\\triggers\\PostConfirmation",
+  "triggerTemplate": "PostConfirmation.json.ejs",
+  "roleName": "cscassignment2778ebcadPostConfirmation",
+  "skipEdit": true,
+  "GROUP": "registered_users",
+  "enableCors": false
+}
