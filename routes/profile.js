@@ -24,7 +24,7 @@ var connection = mysql.createConnection({
 const stub = ClarifaiStub.grpc();
   
 const metadata = new grpc.Metadata();
-metadata.set("authorization", "Key ac663adaff7e4954812495fb7e8de795");
+metadata.set("authorization", "Key " + process.env.CLARIFAI_AUTH_KEY);
 
 router.get('/', function(req, res, next) {
     console.log('profile');
@@ -37,7 +37,7 @@ router.post('/uploadImage', function(req, res, next) {
   stub.PostModelOutputs(
     {
         // model id of face detector
-        model_id: "d02b4508df58432fbb84e800597b8959",
+        model_id: process.env.CLARIFAI_MODEL_ID,
         inputs: [{data: {image: {base64: buf}}}]
     },
     metadata,
@@ -67,9 +67,10 @@ router.post('/uploadImage', function(req, res, next) {
                           Body: buf,
                           ACL: "public-read"
                       }, function (data, error) {
+                        
                           //after image is uploaded, make changes to database
                           var imageUrl = "https://talentsphotosbucket.s3.amazonaws.com/" + req.body.FileName;
-                          connection.query("insert into TalentPictures (ImageUrl, Description, TalentId) Values('" + imageUrl + "','" + req.body.Description + "'," + req.body.TalentId + ");"
+                          connection.query("insert into TalentPictures (ImageUrl, Description, TalentId) Values('" + imageUrl + "','" + req.body.Description + "','" + req.body.TalentId + "');"
                               , function (error, results, fields) {
                                   if (error) {
                                       return res.status('400').send({ msg: "error updating database" });

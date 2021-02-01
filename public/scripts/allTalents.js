@@ -3,12 +3,19 @@
 var custId = sessionStorage.getItem('custId');
 console.log(custId);
 if(custId == null){
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    var custId = urlParams.get('customerId');
-    console.log("new custId assigned = " + custId);
+    //allow unregistered users
+    console.log('none');
 }
-getAccountTier(custId);
+else{
+    $( "#homeLink_list" ).remove();
+    getAccountTier(custId);
+    $('#buttonList').append('<li><button type="button" class="btn btn-primary" id="billing_portal_link" style="margin-bottom: 4px">Change subscription plan</button></li>'+
+    '<li><button type="button" class="btn btn-primary" id="logout" style="margin-bottom: 4px">Log out</button></li>'+
+    '<li><a id ="talentsLink" href="/talents">All Talents</a></li>'+
+    '<li><a id ="profileLink" href="/profile">My Profile</a></li>');
+    $( "#homeLink" ).remove();
+}
+
 
 getAllTalentPics();
 
@@ -26,15 +33,22 @@ function getAllTalentPics(){
         for (var i = 0; i < profiles.length; i++){
             if (profiles[i].TalentId != userId){
                 console.log(profiles[i].TalentId);
-                var elem = '<li id=' + profiles[i].TalentId + '_li onClick="goToDetailsPage(' + profiles[i].TalentId + ');"></li><br><br>';
+                var elem = '<li id=' + profiles[i].TalentId + '_li onClick="goToDetailsPage(\'' + profiles[i].TalentId + '\');"></li><br><br>';
                 $('#talentList').append(elem);
                 var elemId = '#' + profiles[i].TalentId + '_li';
                 $(elemId).append('<h2 id=' + profiles[i].TalentId + '_h2>' + profiles[i].TalentName + '</h2>');
-                if (latestImages[i] != undefined){
-                    $(elemId).append('<img id=' + profiles[i].TalentId + '_img src=' + latestImages[i].ImageUrl + '></img>');
-                }else{
+                var added = false;  //added is a boolean to show whether a profile image has been added
+                for(var x = 0; x < latestImages.length; x++){
+                    
+                    if(latestImages[x].TalentId == profiles[i].TalentId){
+                        $(elemId).append('<img id=' + profiles[i].TalentId + '_img src=' + latestImages[x].ImageUrl + '></img>');
+                        added = true; //state a profile image has been added
+                    }
+                }
+                if(added == false){
                     $(elemId).append('<p> No Images has been uploaded. </p>');
                 }
+
                 $(elemId).append('<p id=' + profiles[i].TalentId + '_p>' + profiles[i].Biography + '</p>');
             }
         }
@@ -46,7 +60,7 @@ $(function(){
 })
 
 function goToDetailsPage(id){
-    window.location.href = window.location.href + '/' + id
+    window.location.href = '/talents/' + id
 }
 
 
@@ -90,7 +104,8 @@ $( "#logout" ).on( "click", function() {
             case 200: //successful login
 
                 
-                //myStorage.setItem('userId', 3);
+                sessionStorage.removeItem('custId');
+                
                 //window.location.href = '/talents';
                 window.location.href = '/';
                 break;

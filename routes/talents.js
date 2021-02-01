@@ -4,11 +4,16 @@ var router = express.Router();
 var path = require('path');
 var mysql = require('mysql');
 const e = require('express');
+
+// Get env file for keys and Ids
+const dotenv = require('dotenv');
+dotenv.config();
+
 var connection = mysql.createConnection({
-    host     : 'talents-database.cacr8kwxr9r3.us-east-1.rds.amazonaws.com',
-    user     : 'admin123',
-    password : 'admin123',
-    database : 'TalentsDB'
+    host     : process.env.HOST,
+    user     : process.env.SQL_USER,
+    password : process.env.SQL_PASS,
+    database : process.env.DATABASE
   });
 
 router.get('/', function(req, res, next) {
@@ -48,7 +53,7 @@ router.get('/getOneTalent/:id', function(req, res, next) {
     var talentId = req.params.id;
     var profile;
     //gets all talent profiles
-    connection.query('SELECT * FROM TalentProfile where TalentId = ' + talentId + ';'
+    connection.query("SELECT * FROM TalentProfile where TalentId = '" + talentId + "';"
     , function (error, results, fields) {
         if (error){
             return res.status('400').send({ msg: "error"  });
@@ -58,14 +63,34 @@ router.get('/getOneTalent/:id', function(req, res, next) {
         }
     });
     //get the latest talent image for each user(provided they have one)
-    connection.query('select ImageId, Description, ImageUrl, TalentId from TalentPictures where TalentId = ' + talentId + ';'
+    connection.query("select ImageId, Description, ImageUrl, TalentId from TalentPictures where TalentId = '" + talentId + "';"
     , function (error, results, fields) {
         if (error){
+            console.log(error);
             return res.status('400').send({ msg: "error"  });
         }else{
             console.log(results);
             var images = results;
             return res.status('200').send({ profile: profile, images: images  });
+        }
+    });
+});
+
+
+router.post('/createTalent', function(req, res) {
+    var custId = req.body.custId;
+    var name = req.body.name;
+    var bio = req.body.bio;
+    
+    connection.query("insert into TalentProfile (TalentId, TalentName, Biography) Values('" + custId + "','" + name + "','" + bio + "');"
+    , function (error, results, fields) {
+        if (error) {
+            console.log(error);
+            return res.status('500').send({ msg: "Error updating database" });
+        } else {
+            console.log(results);
+            var id = results.insertId;
+            return res.status('200').send({ msg: "Customer added as talent" });
         }
     });
 });

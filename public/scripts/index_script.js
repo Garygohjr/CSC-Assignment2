@@ -1,3 +1,4 @@
+sessionStorage.removeItem('custId');
 let signupForm = document.getElementById('customer_register');
 console.log(signupForm);
 if(signupForm){
@@ -8,9 +9,56 @@ if(signupForm){
         registerCust().then((result) => {
           console.log(result);
           customer = result.customer;
-          window.location.href = '/subscription.html?customerId=' + customer.id;
+
+          registerTalent(customer.id).then((result) => {
+            if(result.success == true){
+                window.location.href = '/subscription.html?customerId=' + customer.id;
+            }
+            else{
+                console.log(result.msg);
+            }
+          });
         });
       });
+}
+
+function registerTalent(cust_id){
+    var code = null;
+    var cust_name = document.querySelector('#name').value;
+    var biography = document.querySelector('#biography').value;
+
+    var input_data = JSON.stringify({
+        custId: cust_id,
+        name: cust_name,
+        bio: biography
+    });
+
+    return fetch('/talents/createTalent', {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: input_data,
+        })
+        .then((response) => {
+            //return cust object as json
+            code = response.status;
+
+            switch(code){
+                case 200: //successful login
+                    return {success: true, msg: "Customer added as talent"};
+                    break;
+                
+                case 500:
+                    return {success: false, msg: "Database error occured!"};
+                    break;
+                default:
+                    return {success: false, msg: "Error!"};
+                    break;
+            }
+
+
+        });
 }
 
 
@@ -74,9 +122,9 @@ function login() {
         switch(code){
             case 200: //successful login
 
-                
+                myStorage.setItem('custId', result.stripe_id);
                 //myStorage.setItem('userId', 3);
-                //window.location.href = '/talents';
+                window.location.href = '/talents';
                 break;
             
             case 402:
