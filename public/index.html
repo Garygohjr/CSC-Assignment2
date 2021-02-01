@@ -23,7 +23,9 @@
       <p class="email_header">Email</p>
       <input class="" id="email" type="text" placeholder="Email address" required />
       <p class="email_header">Name</p>
-      <input class="" id="email" type="text" placeholder="Name" required />
+      <input class="" id="name" type="text" placeholder="Name" required />
+      <p class="email_header">Password</p>
+      <input class="" id="password" type="password" placeholder="Password" required />
     </div>
 
     <button id="customer-submit" class="" type="submit">
@@ -32,15 +34,17 @@
   </form>
 
   <h1>Login</h1>
-    <label for="username">Username: </label>
-    <input id="usernameInput" type="text" name="usernameInput">
+    <label for="email_login">Username (Your Email): </label>
+    <input id="email_login_input" type="text" placeholder="Email address" name="email_login_input">
     <br>
     <br>
     <label for="password">Password: </label>
-    <input id="passwordInput" type="text" name="passwordInput">
+    <input id="passwordInput" type="password" placeholder="Password" name="passwordInput" >
     <br>
     <br>
   <input type="submit" id="login" value="login" onclick="login();">
+  <p id="err_login" style="color: red"></p>
+
   <script src="/scripts/index_script.js"></script>
 </body>
 
