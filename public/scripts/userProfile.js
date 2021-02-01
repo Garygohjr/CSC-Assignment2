@@ -32,11 +32,10 @@ function getUserProfile(){
 }
 
 AWS.config.update({
-    accessKeyId: 'ASIASQ2NIDX46DFBLNUZ',
-    secretAccessKey: 'V/PLW4cuuZKsaO32mDXlyehem5zf2RMNaUGTpO+9',
-    sessionToken: 'FwoGZXIvYXdzEKH//////////wEaDHhUaVA1/jLO3InmyyLKAZupVEGmfvjaopTSIF8sRpLvN26HSN2kf++CUVf3EmRkh3RDVhsAP9WgEWMaXXtw9ruUwr9AYL7FPM3ntpaFCt5BYw5r6Ll+JD40cPpKVUNNP5EmlJVGNdHEfybl0uJA5f51wjbq6GGIbIYn/RGxRXiuKvMaVNTtcnKZBjgSPvGmhTvZT3bEG+qIEoVZDWywuMYKEz2Lu0rQBT5LW3nKlUVWsuY6AlutTiEB+7lfnY/rQ/9/a9HsHwHZpCa613jiv0FbosnBRLnx76EouMjQgAYyLVdjEa0GWpgOA92DCu4y3PZ4l9DDn0kak8iLfEX4+VnaQQhKo82yUq7VC0cgcA=='
+    accessKeyId: 'ASIASQ2NIDX4SFQUZHFW',
+    secretAccessKey: 'pW0J3+e9h1EdnwIeSGmZHKiNT7TlLtWPvFVCy5PM',
+    sessionToken: 'FwoGZXIvYXdzEMn//////////wEaDC5QinkvDGqq7MBwSSLKAQG57+spaCkVkyIHqSmQQweOx1F8lpjDiQQQyQq/6CeMxWDCHrFUR5dv5Vvqh+eqPYHJed+guZOI9vK6yY3+w6dy2UH0fFUJKcAIyOD0px1BcLq5LE/3GtQ4lX0Y+i5mJ1gihXpf8b5cpKS1tkU9lchJZcd/9TW6+zodKnFjP2VRvEQ9OtiNmuG6/phM9qvqB4tjMclMZ+ZYR/IEVmE7osoEi8fbkZAHDEOEMW3TZl/zcduxC/JGnU4rYs5nSTlJEnOc8zjDZRg1sEQo8rTZgAYyLRd/40gbkw2miLda7VSbDnCg85oE6Sos56uW+O461tJ5HnJ7Yo4BmGydxTMDNg=='
 });
-
 
 AWS.config.region = 'us-east-1';
 var s3BucketName = 'talentsphotosbucket';
@@ -44,11 +43,12 @@ var s3BucketName = 'talentsphotosbucket';
 function validateUpload() {
     var file = document.getElementById('file').files[0];
     var description = $('#descriptionInput').val();
+    var radioValue = $('input[name=radio]:checked').val();
     if (file == null) {
         alert('No Image uploaded. Please upload an image.');
         return false;
     }else if (description == ''){
-        alert('Description field is empty');
+        alert('Description field is empty.');
         return false;
     }else {
         var fileName = file.name;
@@ -67,138 +67,105 @@ function validateUpload() {
 }
 
 function uploadImage() {
-    var s3 = new AWS.S3({
-        params: { Bucket: s3BucketName }
-    });
+    var reader = new FileReader;
     var file = document.getElementById('file').files[0];
-    if (validateUpload()) {
-        s3.putObject({
-            Key: file.name,
-            ContentType: file.type,
-            Body: file,
-            ACL: "public-read"
-        },
-            function (err, data) {
-               if (data !== null){
-                   console.log(data);
-                   console.log(this);
-                   var imageUrl = this.request.httpRequest.stream.responseURL;
-                   var imageData = {};
-                   imageData.ImageUrl = imageUrl;
-                   imageData.TalentId = sessionStorage.getItem('userId');
-                   imageData.Description = $('#descriptionInput').val();
-                   $.ajax({
-                       url:'/profile/uploadImage',
-                       method:'post',
-                       data: imageData
-                   }).done(function(data){
-                        console.log(data);
-                        var results = data.results;
-                        var imageId = data.id;
-                       var elem = '<div class="card" id=card_' + imageId + '></div>'
-                       $('#talentDetails').append(elem);
-                       var elem_id = '#card_' + imageId;
-                       $(elem_id).append('<img src=' + results.ImageUrl + ' id=img_' + imageId +'></img>');
-                       $(elem_id).append('<div class="desc">' + results.Description + '</div>');
-                       $(elem_id).append('<input class="cardRadio" name="radio" type=radio id='+ imageId + ' value=' + imageId + '></input>')
-                   });
-               }else{
-                   alert('image uploading failed');
-               }
+    reader.onload = function () {
+        var imageDataUrl = reader.result; 
+        var imageData = {};
+        imageData.FileName = file.name;
+        imageData.FileType = file.type;
+        imageData.ImageDataUrl = imageDataUrl;
+        imageData.TalentId = sessionStorage.getItem('userId');
+        imageData.Description = $('#descriptionInput').val();
+        $.ajax({
+            url: '/profile/uploadImage',
+            method: 'post',
+            data: imageData
+        }).done(function (data) {
+            console.log(data);
+            var results = data.results;
+            var imageUrl = data.imageUrl;
+            var imageId = data.id;
+            var elem = '<div class="card" id=card_' + imageId + '></div>'
+            $('#talentDetails').append(elem);
+            var elem_id = '#card_' + imageId;
+            $(elem_id).append('<img src=' + imageUrl + ' id=img_' + imageId + '></img>');
+            $(elem_id).append('<div class="desc">' + results.Description + '</div>');
+            $(elem_id).append('<input class="cardRadio" name="radio" type=radio id=' + imageId + ' value=' + imageId + '></input>')
+        }).fail(function(error){
+            alert(error.responseJSON.msg);
         });
+    }
+    if (validateUpload()) {
+        reader.readAsDataURL(file);
     }
 }
 
 function updateImage() {
-    var s3 = new AWS.S3({
-        params: { Bucket: s3BucketName }
-    });
-    var file = document.getElementById('file').files[0];
     var radioValue = $('input[name=radio]:checked').val();
+    var file = document.getElementById('file').files[0];
+    var reader = new FileReader;
+if (radioValue != undefined) {
     var originalImageSrc = $('#img_' + radioValue).attr("src");
     var imageKey = originalImageSrc.substring(originalImageSrc.lastIndexOf('/') + 1);
-    console.log(imageKey);
-    console.log(originalImageSrc);
-    console.log(radioValue);
-    if (validateUpload() || radioValue != undefined) {
-        s3.putObject({
-            Key: file.name,
-            ContentType: file.type,
-            Body: file,
-            ACL: "public-read"
-        },
-            function (err, data) {
-               if (data !== null){
-                   console.log(data);
-                   console.log(this);
-                   var imageUrl = this.request.httpRequest.stream.responseURL;
-                   var imageData = {};
-                   imageData.ImageUrl = imageUrl;
-                   imageData.ImageId = radioValue;
-                   imageData.OriginalImageUrl = originalImageSrc;
-                   imageData.Description = $('#descriptionInput').val();
-                   $.ajax({
-                       url:'/profile/updateImage',
-                       method:'put',
-                       data: imageData
-                   }).done(function(data){
-                        console.log(data);
-                        var results = data.results;
-                        var imageId = results.ImageId;
-                        var elem = '<div class="card" id=card_' + imageId + '></div>'
-                        var elemHTML = $.parseHTML(elem);
-                        $(elemHTML).append('<img src=' + results.ImageUrl + ' id=img_' + imageId +'></img>');
-                        $(elemHTML).append('<div class="desc">' + results.Description + '</div>');
-                        $(elemHTML).append('<input class="cardRadio" name="radio" type=radio id='+ imageId + ' value=' + imageId + '></input>')
-                        $('#card_' + imageId).replaceWith(elemHTML);
-                        //if there is no more image references in the sql db, delete the s3 object hosting the image
-                        if (data.imgReferences == 0){
-                            
-                            s3.deleteObject({
-                                Key: imageKey
-                            }, function(err,data){
-                            });
-                        }
-                   });
-               }else{
-                    alert('image uploading failed');
-               }
-        });
-    }else{
-        if (radioValue == undefined){
-            alert('please select an image to update.');
-        }
+
+    reader.onload = function () {
+            var imageDataUrl = reader.result;
+            var imageData = {};
+            imageData.FileName = file.name;
+            imageData.FileType = file.type;
+            imageData.ImageDataUrl = imageDataUrl;
+            imageData.ImageId = radioValue;
+            imageData.ImageKey = imageKey;
+            imageData.OriginalImageUrl = originalImageSrc;
+            imageData.Description = $('#descriptionInput').val();
+            $.ajax({
+                url: '/profile/updateImage',
+                method: 'put',
+                data: imageData
+            }).done(function (data) {
+                console.log(data);
+                var results = data.results;
+                var imageId = results.ImageId;
+                var imageUrl = data.imageUrl;
+                var elem = '<div class="card" id=card_' + imageId + '></div>'
+                var elemHTML = $.parseHTML(elem);
+                $(elemHTML).append('<img src=' + imageUrl + ' id=img_' + imageId + '></img>');
+                $(elemHTML).append('<div class="desc">' + results.Description + '</div>');
+                $(elemHTML).append('<input class="cardRadio" name="radio" type=radio id=' + imageId + ' value=' + imageId + '></input>')
+                $('#card_' + imageId).replaceWith(elemHTML);
+            }).fail(function (error) {
+                alert(error.responseJSON.msg);
+            });
+        } 
+        
+    }else {
+        alert('Please select an image to update.');
+    }
+    if (validateUpload()) {
+        reader.readAsDataURL(file);
     }
 }
 
 function deleteImage(){
-    var s3 = new AWS.S3({
-        params: { Bucket: s3BucketName }
-    });
     var radioValue = $('input[name=radio]:checked').val();
     var originalImageSrc = $('#img_' + radioValue).attr("src");
     var imageKey = originalImageSrc.substring(originalImageSrc.lastIndexOf('/') + 1);
     var imageData = {};
     imageData.ImageId = radioValue;
     imageData.OriginalImageUrl = originalImageSrc;
-    if (radioValue != undefined) {
-        $.ajax({
-            url: '/profile/deleteImage',
-            method: 'delete',
-            data: imageData
-        }).done(function (data) {
-            $('#card_' + radioValue).remove();
-            //if there is no more image references in the sql db, delete the s3 object hosting the image
-            if (data.imgReferences == 0) {
-
-                s3.deleteObject({
-                    Key: imageKey
-                }, function (err, data) {
-                });
-            }
-        });
-    }else{
-        alert('please select an image to delete.');
-    }
+    imageData.ImageKey = imageKey;
+        if (radioValue != undefined) {
+            $.ajax({
+                url: '/profile/deleteImage',
+                method: 'delete',
+                data: imageData
+            }).done(function (data) {
+                $('#card_' + radioValue).remove();
+            });
+        } else {
+            alert('please select an image to delete.');
+        }
+    
 
 }

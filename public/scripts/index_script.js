@@ -1,4 +1,3 @@
-
 let signupForm = document.getElementById('customer_register');
 console.log(signupForm);
 if(signupForm){
@@ -38,8 +37,6 @@ function registerCust(){
     });
 }
 
-
-
 function login() {
     var myStorage = window.sessionStorage;
     var username = $('#usernameInput').val();
@@ -48,6 +45,21 @@ function login() {
 
     //userId 3 is my dummy default profile used when logging in
     myStorage.setItem('userId', 3);
-    window.location.href = '/talents'
+    // var user={};
+    // user.id = 'user123';
+    // user.username= 'user123';
+    // user.email='faker@gmail.com'
+    // $.ajax({
+    //     url:'/useDisqusSSO',
+    //     method:'post',
+    //     data:user
+    // }).done(function(data){
+    //     console.log(data);
+    //     var credentials = data.credentials;
+    //     myStorage.setItem('auth',credentials.auth);
+    //     myStorage.setItem('pubKey',credentials.pubKey);
+        window.location.href = '/talents';
+    // })
+    // window.location.href = '/talents';
 }
 
