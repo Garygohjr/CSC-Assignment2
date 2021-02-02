@@ -1,7 +1,7 @@
 getUserProfile();
 
 function getUserProfile(){
-    var id = sessionStorage.getItem('userId');
+    var id = sessionStorage.getItem('custId');
     console.log(id);
     $.ajax({
         url:'/talents/getOneTalent/' + id,
@@ -75,7 +75,7 @@ function uploadImage() {
         imageData.FileName = file.name;
         imageData.FileType = file.type;
         imageData.ImageDataUrl = imageDataUrl;
-        imageData.TalentId = sessionStorage.getItem('userId');
+        imageData.TalentId = sessionStorage.getItem('custId');
         imageData.Description = $('#descriptionInput').val();
         $.ajax({
             url: '/profile/uploadImage',

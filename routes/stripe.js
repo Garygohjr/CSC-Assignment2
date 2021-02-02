@@ -41,14 +41,16 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
       var record = await dbCollection.findOne(query, null);
 
       console.log(record);
-      return res.status('200').send({ msg: "Account Tier returned.", price: record.price_id });
-            // .then((result) => {
-            //   return response.status('200').send({ msg: "Subscription plan registered and saved to database!"  });
-            // })
-            // .catch(e => { 
-            //   return response.status('500').send({ error: e  }); 
-            // });
 
+      if(record.price_id == process.env.STRIPE_PAIDTIER){
+        return res.status('200').send({ msg: "Account Tier returned.", tier: 1 });
+      }
+      else if(record.price_id == process.env.STRIPE_FREETIER){
+        return res.status('200').send({ msg: "Account Tier returned.", tier: 2 });
+      }
+      else{
+        return res.status('400').send({ msg: "Account Tier not found." });
+      }
 
     });
 
@@ -66,14 +68,17 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
 
               var product = await stripe.products.retrieve(price.product);
 
-              outputList.push({
-                price_id: price.id,
-                product_id: price.product.id,
-                product_name: product.name,
-                currency: price.currency,
-                amt: price.unit_amount_decimal / 100,
-                paymentInterval: price.recurring.interval
-              });
+              if(!product.name.includes("Pokimane")){ //filter out CA1 products
+                outputList.push({
+                  price_id: price.id,
+                  product_id: price.product.id,
+                  product_name: product.name,
+                  currency: price.currency,
+                  amt: price.unit_amount_decimal / 100,
+                  paymentInterval: price.recurring.interval
+                });
+              }
+              
 
 
             }
@@ -120,8 +125,17 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
         
         const result = await cognito.signIn(email, password);
         console.log(result);
+
         if(result.success){
-          return res.status('200').send({ msg: "Customer logged in!", user: result  });
+
+          var query = {
+            "email" : email
+          }
+    
+          var record = await dbCollection.findOne(query, null);
+    
+          console.log(record);
+          return res.status('200').send({ msg: "Customer logged in!", user: result, stripe_id: record.stripe_id  });
         }
         else{
           return res.status('402').send({ error: result.error.message  });

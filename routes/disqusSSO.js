@@ -1,5 +1,10 @@
-var DISQUS_SECRET = "cw5GFn04Ng6Y7z7soV7Ml1biBDrWyUQ1JyjkIzVfU5E50yB2qS83cpUE2HeSRTzB";
-var DISQUS_PUBLIC = "ViCBo9fPCzQB1NKrVZNpjrKdlxbjtE2he02de3VQXMMv58XAOL8P5KkM0vFaZRSE";
+// Get env file for keys and Ids
+const dotenv = require('dotenv');
+dotenv.config();
+
+
+var DISQUS_SECRET = process.env.DISQUS_SECRET;
+var DISQUS_PUBLIC = process.env.DISQUS_PUBLIC;
 var CryptoJS = require('crypto-js');
 
 exports.disqusSignon = function disqusSignon(user) {
