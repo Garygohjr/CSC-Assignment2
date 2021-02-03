@@ -1,5 +1,5 @@
 var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com';
-gatewayUrl = "";
+
 var custId = sessionStorage.getItem('custId');
 console.log(custId);
 if(custId == null){

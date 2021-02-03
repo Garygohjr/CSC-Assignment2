@@ -8,11 +8,11 @@ if(signupForm){
         // Create customer
         registerCust().then((result) => {
           console.log(result);
-          customer = result.customer;
+          var stripe_id = result.id;
 
-          registerTalent(customer.id).then((result) => {
+          registerTalent(stripe_id).then((result) => {
             if(result.success == true){
-                window.location.href = '/subscription.html?customerId=' + customer.id;
+                window.location.href = '/subscription.html?customerId=' + stripe_id;
             }
             else{
                 console.log(result.msg);

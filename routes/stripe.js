@@ -19,10 +19,6 @@ const bodyParser = require('body-parser');
 db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // successCallback
   // << db CRUD routes >>
 
-    /* Stripe (something) call */
-    router.get('/', function(req, res, next) {
-      /*some stripe api call code*/
-    });
 
     router.get('/getPKey', async (req, res) => {
       res.send({
@@ -68,7 +64,7 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
 
               var product = await stripe.products.retrieve(price.product);
 
-              if(!product.name.includes("Pokimane")){ //filter out CA1 products
+              if(!product.name.includes("Pokimane")){ //filter out CA1 products left over in stripe account
                 outputList.push({
                   price_id: price.id,
                   product_id: price.product.id,
@@ -135,7 +131,7 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
           var record = await dbCollection.findOne(query, null);
     
           console.log(record);
-          return res.status('200').send({ msg: "Customer logged in!", user: result, stripe_id: record.stripe_id  });
+          return res.status('200').send({ msg: "Customer logged in!", stripe_id: record.stripe_id  });
         }
         else{
           return res.status('402').send({ error: result.error.message  });
@@ -169,7 +165,7 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
         stripe_id: customer.id
       })
       .then((result) => {
-        res.send({ customer });
+        res.send({ stripe_id: customer.id });
       })
       .catch(e => { 
           console.log(e);
