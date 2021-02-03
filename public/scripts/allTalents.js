@@ -25,11 +25,10 @@ function getAllTalentPics(){
     }).done(function(data){
         console.log('we did it');
         console.log(data);
-        var userId = sessionStorage.getItem('userId');
         var profiles = data.profiles;
         var latestImages = data.latestImages;
         for (var i = 0; i < profiles.length; i++){
-            if (profiles[i].TalentId != userId){
+            if (profiles[i].TalentId != custId){
                 console.log(profiles[i].TalentId);
                 var elem = '<li id=' + profiles[i].TalentId + '_li onClick="goToDetailsPage(\'' + profiles[i].TalentId + '\');"></li><br><br>';
                 $('#talentList').append(elem);
