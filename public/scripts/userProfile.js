@@ -1,10 +1,11 @@
 getUserProfile();
 
+var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com'
 function getUserProfile(){
     var id = sessionStorage.getItem('custId');
     console.log(id);
     $.ajax({
-        url:'/talents/getOneTalent/' + id,
+        url: '/api/v1/talents/getOneTalent/' + id,
         method:'GET'
     }).done(function(data){
         console.log(data);
@@ -78,7 +79,7 @@ function uploadImage() {
         imageData.TalentId = sessionStorage.getItem('custId');
         imageData.Description = $('#descriptionInput').val();
         $.ajax({
-            url: '/profile/uploadImage',
+            url: '/api/v1/profile/uploadImage',
             method: 'post',
             data: imageData
         }).done(function (data) {
@@ -120,7 +121,7 @@ if (radioValue != undefined) {
             imageData.OriginalImageUrl = originalImageSrc;
             imageData.Description = $('#descriptionInput').val();
             $.ajax({
-                url: '/profile/updateImage',
+                url: '/api/v1/profile/updateImage',
                 method: 'put',
                 data: imageData
             }).done(function (data) {
@@ -157,7 +158,7 @@ function deleteImage(){
     imageData.ImageKey = imageKey;
         if (radioValue != undefined) {
             $.ajax({
-                url: '/profile/deleteImage',
+                url: '/api/v1/profile/deleteImage',
                 method: 'delete',
                 data: imageData
             }).done(function (data) {

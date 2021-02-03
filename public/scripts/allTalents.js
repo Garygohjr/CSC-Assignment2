@@ -22,7 +22,7 @@ getAllTalentPics();
 
 function getAllTalentPics(){
     $.ajax({
-        url:'/talents/getAllTalents',
+        url:'/api/v1/talents/getAllTalents',
         method:'GET'
     }).done(function(data){
         console.log('we did it');

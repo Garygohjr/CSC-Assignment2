@@ -30,8 +30,8 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: false}));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/v1/stripe', stripeRouter);
-app.use('/talents', talentsRouter);
-app.use('/profile',profileRouter);
+app.use('/api/v1/talents', talentsRouter);
+app.use('/api/v1/profile',profileRouter);
 app.use('/auth_api', authRouter);
 
 module.exports = app;
