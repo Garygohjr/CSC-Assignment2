@@ -1,12 +1,13 @@
 
 getOneTalentPics();
 
+var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com'
 function getOneTalentPics(){
     var url = window.location.href;
     var id = url.substring(url.lastIndexOf('/') + 1);
     console.log(id);
     $.ajax({
-        url:'/api/v1/talents/getOneTalent/' + id,
+        url: gatewayUrl + '/api/v1/talents/getOneTalent/' + id,
         method:'GET'
     }).done(function(data){
         console.log(data);
