@@ -1,7 +1,7 @@
+var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com';
 
 getOneTalentPics();
 
-var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com'
 function getOneTalentPics(){
     var url = window.location.href;
     var id = url.substring(url.lastIndexOf('/') + 1);
