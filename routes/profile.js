@@ -45,8 +45,6 @@ router.post('/uploadImage', function(req, res, next) {
         if (response.status.code !== 10000) {
             console.log("Received failed status: " + response.status.description + "\n" + response.status.details);
         }
-        console.log(response);
-        console.log(response.outputs[0].data);
         var detectedRegions = response.outputs[0].data.regions;
         if (detectedRegions.length == 0) {
             return res.status('400').send({ msg: "Please upload an image that is of human being" });
@@ -63,9 +61,9 @@ router.post('/uploadImage', function(req, res, next) {
                           Body: buf,
                           ACL: "public-read"
                       }, function (data, error) {
-                        
+                        var path = this.request.httpRequest.stream.path;
                           //after image is uploaded, make changes to database
-                          var imageUrl = "https://talentsphotosbucket.s3.amazonaws.com/" + req.body.FileName;
+                          var imageUrl = "https://talentsphotosbucket.s3.amazonaws.com" + path;
                           connection.query("insert into TalentPictures (ImageUrl, Description, TalentId) Values('" + imageUrl + "','" + req.body.Description + "','" + req.body.TalentId + "');"
                               , function (error, results, fields) {
                                   if (error) {
@@ -129,7 +127,9 @@ router.put('/updateImage', function(req, res, next) {
                               Body: buf,
                               ACL: "public-read"
                           }, function (data, error) {
-                            var imageUrl = "https://talentsphotosbucket.s3.amazonaws.com/" + req.body.FileName;
+                             var path = this.request.httpRequest.stream.path;
+                          //after image is uploaded, make changes to database
+                          var imageUrl = "https://talentsphotosbucket.s3.amazonaws.com" + path;
                             connection.query("Update TalentPictures set ImageUrl='" + imageUrl + "',Description='" + req.body.Description + "' where ImageId=" + req.body.ImageId + ";"
                               , function (error, results, fields) {
                                   if (error){
