@@ -26,10 +26,6 @@ const stub = ClarifaiStub.grpc();
 const metadata = new grpc.Metadata();
 metadata.set("authorization", "Key " + process.env.CLARIFAI_AUTH_KEY);
 
-router.get('/', function(req, res, next) {
-    console.log('profile');
-    res.sendFile(path.join(__dirname + '/../public/userProfile.html'));
-});
 
 router.post('/uploadImage', function(req, res, next) {
   var imageDataUrl = req.body.ImageDataUrl;

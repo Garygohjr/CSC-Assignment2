@@ -16,11 +16,6 @@ var connection = mysql.createConnection({
     database : process.env.DATABASE
   });
 
-router.get('/', function(req, res, next) {
-    console.log(req.body);
-    res.sendFile(path.join(__dirname + '/../public/allTalents.html'));
-});
-
 router.get('/getAllTalents', function(req, res, next) {
     var profiles;
     //gets all talent profiles
@@ -42,10 +37,6 @@ router.get('/getAllTalents', function(req, res, next) {
             return res.status('200').send({ profiles: profiles, latestImages: latestImages  });
         }
     });
-});
-
-router.get('/:id', function(req, res, next) {
-    res.sendFile(path.join(__dirname + '/../public/talentDetails.html'));
 });
 
 router.get('/getOneTalent/:id', function(req, res, next) {

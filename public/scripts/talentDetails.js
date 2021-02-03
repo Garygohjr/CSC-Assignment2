@@ -6,7 +6,7 @@ function getOneTalentPics(){
     var id = url.substring(url.lastIndexOf('/') + 1);
     console.log(id);
     $.ajax({
-        url:'/talents/getOneTalent/' + id,
+        url:'/api/v1/talents/getOneTalent/' + id,
         method:'GET'
     }).done(function(data){
         console.log(data);

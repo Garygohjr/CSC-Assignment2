@@ -1,20 +1,25 @@
 var express = require('express');
 var router = express.Router();
-var sso = require('./disqusSSO');
+var path = require('path');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.post('/useDisqusSSO', function(req, res, next) {
-  console.log('sso');
-  console.log(req.body);
-  var user = req.body;
-  var data = sso.disqusSignon(user);
-  console.log(data);
-  res.send({credentials:data});
-  
+router.get('/profile', function(req, res, next) {
+  console.log('profile');
+  res.sendFile(path.join(__dirname + '/../public/userProfile.html'));
 });
+
+router.get('/talents', function(req, res, next) {
+  console.log(req.body);
+  res.sendFile(path.join(__dirname + '/../public/allTalents.html'));
+});
+
+router.get('/talents/:id', function(req, res, next) {
+  res.sendFile(path.join(__dirname + '/../public/talentDetails.html'));
+});
+
 
 module.exports = router;
