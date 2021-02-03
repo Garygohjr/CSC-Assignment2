@@ -19,10 +19,10 @@ else{
 
 getAllTalentPics();
 
-
+var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com'
 function getAllTalentPics(){
     $.ajax({
-        url:'/api/v1/talents/getAllTalents',
+        url: gatewayUrl + '/api/v1/talents/getAllTalents',
         method:'GET'
     }).done(function(data){
         console.log('we did it');
@@ -55,9 +55,6 @@ function getAllTalentPics(){
     })
 }
 
-$(function(){
-    $('.compose-wrapper').attr("display","none");
-})
 
 function goToDetailsPage(id){
     window.location.href = '/talents/' + id

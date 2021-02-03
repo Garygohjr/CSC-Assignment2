@@ -5,7 +5,7 @@ function getUserProfile(){
     var id = sessionStorage.getItem('custId');
     console.log(id);
     $.ajax({
-        url: '/api/v1/talents/getOneTalent/' + id,
+        url: gatewayUrl + '/api/v1/talents/getOneTalent/' + id,
         method:'GET'
     }).done(function(data){
         console.log(data);
@@ -79,7 +79,7 @@ function uploadImage() {
         imageData.TalentId = sessionStorage.getItem('custId');
         imageData.Description = $('#descriptionInput').val();
         $.ajax({
-            url: '/api/v1/profile/uploadImage',
+            url: gatewayUrl + '/api/v1/profile/uploadImage',
             method: 'post',
             data: imageData
         }).done(function (data) {
@@ -158,7 +158,7 @@ function deleteImage(){
     imageData.ImageKey = imageKey;
         if (radioValue != undefined) {
             $.ajax({
-                url: '/api/v1/profile/deleteImage',
+                url: gatewayUrl + '/api/v1/profile/deleteImage',
                 method: 'delete',
                 data: imageData
             }).done(function (data) {
