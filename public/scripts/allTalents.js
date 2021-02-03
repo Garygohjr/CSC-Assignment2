@@ -1,4 +1,5 @@
 
+var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com'
 
 var custId = sessionStorage.getItem('custId');
 console.log(custId);
@@ -19,7 +20,6 @@ else{
 
 getAllTalentPics();
 
-var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com'
 function getAllTalentPics(){
     $.ajax({
         url: gatewayUrl + '/api/v1/talents/getAllTalents',
@@ -64,7 +64,7 @@ function goToDetailsPage(id){
 $( "#billing_portal_link" ).on( "click", function() {
     var input_data = JSON.stringify({
         custId: custId,
-        dest: 'talents'
+        dest: 'allTalents.html'
     });
     console.log(input_data);
     return fetch('/api/v1/stripe/accessPortal', {

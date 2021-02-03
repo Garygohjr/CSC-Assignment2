@@ -33,7 +33,7 @@ function registerTalent(cust_id){
         bio: biography
     });
 
-    return fetch('/talents/createTalent', {
+    return fetch('/api/v1/talents/createTalent', {
         method: 'post',
         headers: {
             'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ function login() {
 
                 myStorage.setItem('custId', result.stripe_id);
                 //myStorage.setItem('userId', 3);
-                window.location.href = '/talents';
+                window.location.href = '/allTalents.html';
                 break;
             
             case 402:

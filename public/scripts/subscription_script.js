@@ -63,7 +63,7 @@ function stripeTokenHandler(token){
         switch(response.status){
             case 200:
                 myStorage.setItem('custId', custId);
-                window.location.href = '/talents'
+                window.location.href = '/allTalents.html'
                 break;
             case 500:
                 console.log("Server error: " + b.error);

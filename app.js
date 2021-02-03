@@ -12,7 +12,6 @@ var usersRouter = require('./routes/users');
 var stripeRouter = require('./routes/stripe');
 var talentsRouter = require('./routes/talents');
 var profileRouter = require('./routes/profile');
-var authRouter = require('./routes/auth_api');
 
 var app = express();
 
@@ -32,7 +31,7 @@ app.use('/users', usersRouter);
 app.use('/api/v1/stripe', stripeRouter);
 app.use('/api/v1/talents', talentsRouter);
 app.use('/api/v1/profile',profileRouter);
-app.use('/auth_api', authRouter);
+
 
 module.exports = app;
 

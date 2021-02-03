@@ -291,11 +291,31 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
     
       switch (event.type) {
     
-        case 'payment_intent.payment_failed':
+        // case 'payment_intent.payment_failed':
 
         case 'payment_intent.succeeded':
     
           var paymentIntent = event.data.object;
+          var amt = paymentIntent.amount;
+          console.log(paymentIntent);
+          if(amt != 0){
+            var cust_id = paymentIntent.customer;
+            var currentDateTime = new Date().toLocaleString();
+            
+            var query = {
+              "stripe_id" : cust_id
+            }
+      
+            var update = {
+              $set:{
+                "last_paid_amount": amt,
+                "last_paid_datetime": currentDateTime
+              }
+            }
+      
+            dbCollection.updateOne(query, update, { "upsert": false });
+          }
+            
 
           // if(event.type == 'payment_intent.payment_failed'){
 
@@ -303,8 +323,6 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
           // else if(event.type == 'payment_intent.succeeded'){
 
           // }
-    
-          console.log(`PaymentIntent detected for ${paymentIntent}`);
     
           // Then define and call a method to handle the successful payment intent.
     
