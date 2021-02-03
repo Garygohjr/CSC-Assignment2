@@ -1,6 +1,7 @@
+var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com';
+
 getUserProfile();
 
-var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com'
 function getUserProfile(){
     var id = sessionStorage.getItem('custId');
     console.log(id);
