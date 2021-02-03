@@ -1,5 +1,4 @@
-
-
+var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com';
 var custId = sessionStorage.getItem('custId');
 console.log(custId);
 if(custId == null){
@@ -19,7 +18,6 @@ else{
 
 getAllTalentPics();
 
-var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com'
 function getAllTalentPics(){
     $.ajax({
         url: gatewayUrl + '/api/v1/talents/getAllTalents',
