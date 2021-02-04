@@ -29,6 +29,28 @@ metadata.set("authorization", "Key " + process.env.CLARIFAI_AUTH_KEY);
 
 router.post('/uploadImage', function(req, res, next) {
   var imageDataUrl = req.body.ImageDataUrl;
+
+  var error_msg = "";
+  if(!imageDataUrl){
+    error_msg += "Missing image data<br/>"
+  }
+  if(!req.body.FileName){
+    error_msg += "Missing file name<br/>"
+  }
+  if(!req.body.FileType){
+    error_msg += "Missing file type<br/>"
+  }
+  if(!req.body.TalentId){
+    error_msg += "Missing talent ID<br/>"
+  }
+  if(!req.body.Description){
+    error_msg += "Missing description<br/>"
+  }
+
+  if (error_msg != "") {
+    return res.status('400').send({ msg: error_msg });
+  }
+
   var buf = Buffer.from(imageDataUrl.replace(/^data:image\/\w+;base64,/, ""),'base64');
   stub.PostModelOutputs(
     {
@@ -93,6 +115,34 @@ router.put('/updateImage', function(req, res, next) {
   var imgReferences;
   var data;
   var imageDataUrl = req.body.ImageDataUrl;
+
+  var error_msg = "";
+  if(!imageDataUrl){
+    error_msg += "Missing image data<br/>"
+  }
+  if(!req.body.FileName){
+    error_msg += "Missing file name<br/>"
+  }
+  if(!req.body.FileType){
+    error_msg += "Missing file type<br/>"
+  }
+  if(!req.body.ImageId){
+    error_msg += "Missing image ID<br/>"
+  }
+  if(!req.body.Description){
+    error_msg += "Missing description<br/>"
+  }
+  if(!req.body.ImageKey){
+    error_msg += "Missing image key<br/>"
+  }
+  if(!req.body.OriginalImageUrl){
+    error_msg += "Missing original image URL<br/>"
+  }
+
+  if (error_msg != "") {
+    return res.status('400').send({ msg: error_msg });
+  }
+
   var buf = Buffer.from(imageDataUrl.replace(/^data:image\/\w+;base64,/, ""),'base64');
     stub.PostModelOutputs(
         {
@@ -177,6 +227,21 @@ router.delete('/deleteImage', function(req, res, next) {
         });
   var imgReferences;
   var data;
+  var error_msg = "";
+
+  if(!req.body.ImageId){
+    error_msg += "Missing image ID<br/>"
+  }
+  if(!req.body.ImageKey){
+    error_msg += "Missing image key<br/>"
+  }
+  if(!req.body.OriginalImageUrl){
+    error_msg += "Missing original image URL<br/>"
+  }
+
+  if (error_msg != "") {
+    return res.status('400').send({ msg: error_msg });
+  }
   //delete selected image from database
   connection.query("delete from TalentPictures where ImageId =" + req.body.ImageId +";"
     , function (error, results, fields) {

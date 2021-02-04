@@ -16,6 +16,7 @@ if(signupForm){
     signupForm.addEventListener('submit', function (evt) {
         evt.preventDefault();
         $('.errMsg').remove();
+        $('#subscription_error').text('');
         if ($('input[name="priceId"]:checked').val()) {
             createToken();
         }
@@ -63,13 +64,15 @@ function stripeTokenHandler(token){
         switch(response.status){
             case 200:
                 myStorage.setItem('custId', custId);
-                window.location.href = '/talents'
+                window.location.href = '/allTalents.html'
                 break;
             case 500:
-                console.log("Server error: " + b.error);
+                console.log("Server error: " + b.error_msg);
+                $('#subscription_error').text("Server error: " + b.error_msg);
                 break;
             case 400:
-                console.log("Error: " + b.error);
+                console.log("Error: " + b.error_msg);
+                $('#subscription_error').text("Error: " + b.error_msg);
                 break;
             default:
                 console.log(b);

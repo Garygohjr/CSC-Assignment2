@@ -19,10 +19,6 @@ const bodyParser = require('body-parser');
 db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // successCallback
   // << db CRUD routes >>
 
-    /* Stripe (something) call */
-    router.get('/', function(req, res, next) {
-      /*some stripe api call code*/
-    });
 
     router.get('/getPKey', async (req, res) => {
       res.send({
@@ -68,7 +64,7 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
 
               var product = await stripe.products.retrieve(price.product);
 
-              if(!product.name.includes("Pokimane")){ //filter out CA1 products
+              if(!product.name.includes("Pokimane")){ //filter out CA1 products left over in stripe account
                 outputList.push({
                   price_id: price.id,
                   product_id: price.product.id,
@@ -91,7 +87,7 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
             }
 
       } catch (error) {
-        return res.status('402').send({ error: error.message  });
+        return res.status('400').send({ error: error.message  });
       }
 
     });
@@ -99,19 +95,19 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
     router.post('/logoutCustomer', async (req, res) => {
 
       try {
-        var fullUrl = req.protocol + '://' + req.get('host') + '/'
+        
         var result = await cognito.signOut();
         if(result){
           return res.status('200').send({ msg: "Customer logged out!"});
         }
         else{
-          return res.status('402').send({ error: result.error.message });
+          return res.status('400').send({ error: result.error.message });
         }
         
 
       } catch (error) {
         console.log(error);
-        return res.status('402').send({ error: error.message  });
+        return res.status('400').send({ error: error.message  });
       }
 
 
@@ -135,15 +131,15 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
           var record = await dbCollection.findOne(query, null);
     
           console.log(record);
-          return res.status('200').send({ msg: "Customer logged in!", user: result, stripe_id: record.stripe_id  });
+          return res.status('200').send({ msg: "Customer logged in!", stripe_id: record.stripe_id  });
         }
         else{
-          return res.status('402').send({ error: result.error.message  });
+          return res.status('400').send({ error: result.error.message  });
         }
         
       } catch (error) {
         console.log(error);
-        return res.status('402').send({ error: error.message  });
+        return res.status('400').send({ error: error.message  });
       }
 
 
@@ -152,30 +148,47 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
 
     router.post('/createCustomer', async (req, res) => {
       // Create a new customer object
-
+      var error_msg = "";
       var email = req.body.email;
       var password = req.body.password;
-      var name = req.body.name;
+      var cust_name = req.body.name;
 
-      await cognito.signUp(email, password, name);
+      if(!email){
+        error_msg += "Missing email<br/>"
+      }
+      if(!password){
+        error_msg += "Missing password<br/>"
+      }
+      if(!cust_name){
+        error_msg += "Missing name<br/>"
+      }
 
-      const customer = await stripe.customers.create({
-        email: email,
-      });
+      if (error_msg != "") {
+        return res.status('400').send({ error_msg: error_msg });
+      }
+      else{
+        const cognito_acc = await cognito.signUp(email, password, cust_name);
 
-      dbCollection.insertOne({ 
-        email: email,
-        name: name,
-        stripe_id: customer.id
-      })
-      .then((result) => {
-        res.send({ customer });
-      })
-      .catch(e => { 
-          console.log(e);
-          res.status('400').send({ error: e });
-      });
+        const customer = await stripe.customers.create({
+          email: email,
+        });
 
+        dbCollection.insertOne({ 
+          email: email,
+          name: cust_name,
+          stripe_id: customer.id
+        })
+        .then((result) => {
+          console.log("done");
+          console.log(cognito_acc);
+          return res.send({ stripe_id: customer.id });
+          
+        })
+        .catch(e => { 
+            console.log(e);
+            return res.status('400').send({ error_msg: e });
+        });
+      }
 
       
     });
@@ -185,53 +198,72 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
     router.post('/purchasePlan', async (req, res) => {
 
     try {
+      var error_msg = "";
       var custId = req.body.CustomerId;
       var priceId = req.body.PriceId;
       var token = req.body.CardToken;
       console.log(req.body);
-      var paymentMethod = await stripe.paymentMethods.create({
-        type: 'card',
-        card: {
-          token: token
-        }
-      });
 
-      paymentMethod = await stripe.paymentMethods.attach(
-        paymentMethod.id,
-        {customer: custId}
-      );
+      if(!custId){
+        error_msg += "Missing customer id<br/>"
+      }
+      if(!priceId){
+        error_msg += "Payment plan not recorded<br/>"
+      }
+      if(!token){
+        error_msg += "Missing auto-generated token<br/>"
+      }
 
-      const subscription = await stripe.subscriptions.create({
-        customer: custId,
-        items: [
-          {price: priceId},
-        ],
-        default_payment_method: paymentMethod.id
+      if (error_msg != "") {
+        return res.status('400').send({ error_msg: error_msg });
+      }
+      else{
+
+        var paymentMethod = await stripe.paymentMethods.create({
+          type: 'card',
+          card: {
+            token: token
+          }
+        });
+  
+        paymentMethod = await stripe.paymentMethods.attach(
+          paymentMethod.id,
+          {customer: custId}
+        );
+  
+        const subscription = await stripe.subscriptions.create({
+          customer: custId,
+          items: [
+            {price: priceId},
+          ],
+          default_payment_method: paymentMethod.id
+          
+        });
         
-      });
-      
-      var query = {
-        "stripe_id" : custId
-      }
-
-      var update = {
-        $set:{
-          "paymentmethod_id" : paymentMethod.id,
-          "subscription_id" : subscription.id,
-          "price_id": priceId
+        var query = {
+          "stripe_id" : custId
         }
-      }
+  
+        var update = {
+          $set:{
+            "paymentmethod_id" : paymentMethod.id,
+            "subscription_id" : subscription.id,
+            "price_id": priceId
+          }
+        }
+  
+        dbCollection.updateOne(query, update, { "upsert": false })
+          .then((result) => {
+            return res.status('200').send({ msg: "Subscription plan registered and saved to database!"  });
+          })
+          .catch(e => { return res.status('500').send({ error_msg: e  }); });
 
-      dbCollection.updateOne(query, update, { "upsert": false })
-        .then((result) => {
-          return res.status('200').send({ msg: "Subscription plan registered and saved to database!"  });
-        })
-        .catch(e => { return res.status('500').send({ error: e  }); });
+      }
 
       
 
     } catch (error) {
-      return res.status('400').send({ error: error.message  });
+      return res.status('400').send({ error_msg: error.message  });
     }
 
 
@@ -240,12 +272,23 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
     router.post('/accessPortal', async (req, res) => {
       
       try {
+        var error_msg = "";
         var custId = req.body.custId;
         var destination_page = req.body.dest
         var fullUrl = req.protocol + '://' + req.get('host') + '/' + destination_page;
         console.log(req.protocol);
         console.log(req.get('host'));
         console.log(req.originalUrl);
+        if(!custId){
+          error_msg += "Missing customer id<br/>"
+        }
+        if(!destination_page){
+          error_msg += "Destination page not stated<br/>"
+        }
+  
+        if (error_msg != "") {
+          return res.status('400').send({ error_msg: error_msg });
+        }
 
         const session = await stripe.billingPortal.sessions.create({
           customer: custId,
@@ -261,7 +304,7 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
         return res.status('200').send({ redirect_url: session.url  });
 
       } catch (error) {
-        return res.status('402').send({ error: error.message  });
+        return res.status('400').send({ error_msg: error.message  });
       }
 
     });
@@ -291,11 +334,37 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
     
       switch (event.type) {
     
-        case 'payment_intent.payment_failed':
+        // case 'payment_intent.payment_failed':
 
         case 'payment_intent.succeeded':
     
           var paymentIntent = event.data.object;
+          var amt = paymentIntent.amount;
+          console.log(paymentIntent);
+          if(amt != 0){ //in the event the transaction is for $0
+
+            var cust_id = paymentIntent.customer;
+            var currentDateTime = new Date().toLocaleString();
+            if(cust_id.substring(0,4) == "cus_"){
+              var query = {
+                "stripe_id" : cust_id
+              }
+        
+              var update = {
+                $set:{
+                  "last_paid_amount": amt,
+                  "last_paid_datetime": currentDateTime
+                }
+              }
+        
+              dbCollection.updateOne(query, update, { "upsert": false });
+            }
+            else{
+              return res.status('400').send({ error_msg: "Invalid customer ID"  });
+            }
+            
+          }
+            
 
           // if(event.type == 'payment_intent.payment_failed'){
 
@@ -303,8 +372,6 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
           // else if(event.type == 'payment_intent.succeeded'){
 
           // }
-    
-          console.log(`PaymentIntent detected for ${paymentIntent}`);
     
           // Then define and call a method to handle the successful payment intent.
     
@@ -322,25 +389,22 @@ db.initialize(process.env.NOSQL_DBNAME, 'users', function (dbCollection) { // su
           console.log(`Customer subscription updated`);
           console.log(cust_id);
           console.log(new_price_id);
-
-          var query = {
-            "stripe_id" : cust_id
-          }
-    
-          var update = {
-            $set:{
-              "price_id": new_price_id
+          if(cust_id.substring(0,4) == "cus_"){
+            var query = {
+              "stripe_id" : cust_id
             }
+      
+            var update = {
+              $set:{
+                "price_id": new_price_id
+              }
+            }
+      
+            dbCollection.updateOne(query, update, { "upsert": false });
           }
-    
-          dbCollection.updateOne(query, update, { "upsert": false });
-            // .then((result) => {
-            //   return response.status('200').send({ msg: "Subscription plan registered and saved to database!"  });
-            // })
-            // .catch(e => { 
-            //   return response.status('500').send({ error: e  }); 
-            // });
-
+          else{
+            return res.status('400').send({ error_msg: "Invalid customer ID"  });
+          }
 
           break;
         

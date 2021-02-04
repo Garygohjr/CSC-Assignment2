@@ -1,4 +1,5 @@
 var gatewayUrl = 'https://rdvkdfmsk0.execute-api.us-east-1.amazonaws.com';
+
 var custId = sessionStorage.getItem('custId');
 console.log(custId);
 if(custId == null){
@@ -61,9 +62,10 @@ function goToDetailsPage(id){
 $( "#billing_portal_link" ).on( "click", function() {
     var input_data = JSON.stringify({
         custId: custId,
-        dest: 'talents'
+        dest: 'allTalents.html'
     });
     console.log(input_data);
+    var code = 0;
     return fetch('/api/v1/stripe/accessPortal', {
         method: 'post',
         headers: {
@@ -72,10 +74,22 @@ $( "#billing_portal_link" ).on( "click", function() {
         body: input_data
     })
     .then((response) => {
+        code = response.status;
         return response.json();
     })
     .then((response) => {
-        window.location.replace(response.redirect_url);
+        switch(code){
+            case 200:
+                window.location.replace(response.redirect_url);
+                break;
+            case 400:
+                alert("Error: " + b.error_msg);
+                break;
+            default:
+                console.log(b);
+                break;
+        }   
+        
     });
 });
 
@@ -104,7 +118,7 @@ $( "#logout" ).on( "click", function() {
                 window.location.href = '/';
                 break;
             
-            case 402:
+            case 400:
                 $('#err_login').text(result.error);
                 break;
             default:
