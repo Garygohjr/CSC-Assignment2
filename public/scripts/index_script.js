@@ -14,22 +14,22 @@ if(signupForm){
 
             registerCust().then((result) => {
                 console.log(result);
-                // if(!result.error_bool){
-                //   var stripe_id = result.stripe_id;
+                if(!result.error_bool){
+                  var stripe_id = result.stripe_id;
       
-                //   registerTalent(stripe_id).then((result) => {
-                //       if(result.success == true){
-                //           window.location.href = '/subscription.html?customerId=' + stripe_id;
-                //       }
-                //       else{
-                //           console.log(result.msg);
-                //       }
-                //   });
-                // }
-                // else{
-                //   $('#reg_error').text(result.error_msg);
-                //   console.log(result.error_msg);
-                // }
+                  registerTalent(stripe_id).then((result) => {
+                      if(result.success == true){
+                          window.location.href = '/subscription.html?customerId=' + stripe_id;
+                      }
+                      else{
+                          console.log(result.msg);
+                      }
+                  });
+                }
+                else{
+                  $('#reg_error').text(result.error_msg);
+                  console.log(result.error_msg);
+                }
                 
               });
         }
