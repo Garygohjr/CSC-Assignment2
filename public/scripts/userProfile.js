@@ -122,7 +122,7 @@ if (radioValue != undefined) {
             imageData.OriginalImageUrl = originalImageSrc;
             imageData.Description = $('#descriptionInput').val();
             $.ajax({
-                url: '/api/v1/profile/updateImage',
+                url: gatewayUrl + '/api/v1/profile/updateImage',
                 method: 'put',
                 data: imageData
             }).done(function (data) {
