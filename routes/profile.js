@@ -93,7 +93,8 @@ router.post('/uploadImage', function(req, res, next) {
                                   } else {
                                       console.log(results);
                                       var id = results.insertId;
-                                      return res.status('200').send({ results: req.body, imageUrl: imageUrl, id: id });
+                                      var description = req.body.Description;
+                                      return res.status('200').send({ imageId: id, description: description, imageUrl: imageUrl});
                                   }
                               });
                       });
@@ -195,6 +196,8 @@ router.put('/updateImage', function(req, res, next) {
                                               } else {
                                                   //if it is not referenced, delete that object from S3
                                                   console.log(results);
+                                                  var description = req.body.Description;
+                                                  var id = req.body.ImageId;
                                                   imgReferences = results.length;
                                                   if (imgReferences == 0) {
                                                       s3.deleteObject({
@@ -203,7 +206,7 @@ router.put('/updateImage', function(req, res, next) {
                           
                                                       });
                                                   }
-                                                  return res.status('200').send({ results: data, imageUrl:imageUrl });
+                                                  return res.status('200').send({ imageId: id, description: description, imageUrl:imageUrl });
                                               }
                                           });
                                   }

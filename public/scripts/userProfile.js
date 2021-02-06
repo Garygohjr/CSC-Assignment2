@@ -85,14 +85,14 @@ function uploadImage() {
             data: imageData
         }).done(function (data) {
             console.log(data);
-            var results = data.results;
             var imageUrl = data.imageUrl;
-            var imageId = data.id;
+            var imageId = data.imageId;
+            var description = data.description;
             var elem = '<div class="card" id=card_' + imageId + '></div>'
             $('#talentDetails').append(elem);
             var elem_id = '#card_' + imageId;
             $(elem_id).append('<img src=' + imageUrl + ' id=img_' + imageId + '></img>');
-            $(elem_id).append('<div class="desc">' + results.Description + '</div>');
+            $(elem_id).append('<div class="desc">' + description + '</div>');
             $(elem_id).append('<input class="cardRadio" name="radio" type=radio id=' + imageId + ' value=' + imageId + '></input>')
         }).fail(function(error){
             alert(error.responseJSON.msg);
@@ -127,13 +127,13 @@ if (radioValue != undefined) {
                 data: imageData
             }).done(function (data) {
                 console.log(data);
-                var results = data.results;
-                var imageId = results.ImageId;
+                var imageId = data.imageId;
+                var description = data.description;
                 var imageUrl = data.imageUrl;
                 var elem = '<div class="card" id=card_' + imageId + '></div>'
                 var elemHTML = $.parseHTML(elem);
                 $(elemHTML).append('<img src=' + imageUrl + ' id=img_' + imageId + '></img>');
-                $(elemHTML).append('<div class="desc">' + results.Description + '</div>');
+                $(elemHTML).append('<div class="desc">' + description + '</div>');
                 $(elemHTML).append('<input class="cardRadio" name="radio" type=radio id=' + imageId + ' value=' + imageId + '></input>')
                 $('#card_' + imageId).replaceWith(elemHTML);
             }).fail(function (error) {
