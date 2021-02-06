@@ -29,27 +29,25 @@ function getAllTalentPics(){
         var profiles = data.profiles;
         var latestImages = data.latestImages;
         for (var i = 0; i < profiles.length; i++){
-            if (profiles[i].TalentId != custId){
-                console.log(profiles[i].TalentId);
-                var elem = '<li id=' + profiles[i].TalentId + '_li onClick="goToDetailsPage(\'' + profiles[i].TalentId + '\');"></li><br><br>';
-                $('#talentList').append(elem);
-                var elemId = '#' + profiles[i].TalentId + '_li';
-                $(elemId).append('<h2 id=' + profiles[i].TalentId + '_h2>' + profiles[i].TalentName + '</h2>');
-                var added = false;  //added is a boolean to show whether a profile image has been added
-                for(var x = 0; x < latestImages.length; x++){
-                    
-                    if(latestImages[x].TalentId == profiles[i].TalentId){
-                        $(elemId).append('<img id=' + profiles[i].TalentId + '_img src=' + latestImages[x].ImageUrl + '></img>');
-                        added = true; //state a profile image has been added
-                    }
-                }
-                if(added == false){
-                    $(elemId).append('<p> No Images has been uploaded. </p>');
-                }
+            console.log(profiles[i].TalentId);
+            var elem = '<li id=' + profiles[i].TalentId + '_li onClick="goToDetailsPage(\'' + profiles[i].TalentId + '\');"></li><br><br>';
+            $('#talentList').append(elem);
+            var elemId = '#' + profiles[i].TalentId + '_li';
+            $(elemId).append('<h2 id=' + profiles[i].TalentId + '_h2>' + profiles[i].TalentName + '</h2>');
+            var added = false;  //added is a boolean to show whether a profile image has been added
+            for (var x = 0; x < latestImages.length; x++) {
 
-                $(elemId).append('<p id=' + profiles[i].TalentId + '_p>' + profiles[i].Biography + '</p>');
+                if (latestImages[x].TalentId == profiles[i].TalentId) {
+                    $(elemId).append('<img id=' + profiles[i].TalentId + '_img src=' + latestImages[x].ImageUrl + '></img>');
+                    added = true; //state a profile image has been added
+                }
             }
-        }
+            if (added == false) {
+                $(elemId).append('<p> No Images has been uploaded. </p>');
+            }
+
+            $(elemId).append('<p id=' + profiles[i].TalentId + '_p>' + profiles[i].Biography + '</p>');
+        }    
     })
 }
 
